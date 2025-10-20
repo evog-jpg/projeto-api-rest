@@ -1,0 +1,13 @@
+.env
+
+myproject/
+
+allure-results/
+
+conftest.py
+pytest.ini
+
+__pycache__/
+*.pyc
+*.pyo
+*.pytest_cache/
