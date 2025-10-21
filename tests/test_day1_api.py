@@ -13,20 +13,20 @@ def test_base_endpoint_status_code_200():
 
 def test_fetch_octocat_user_name():
     r = requests.get("https://api.github.com/users/octocat", headers=headers)
-    data = r.json()
-    print("o nome do usuário é:", data["name"])
+    data_posts_endpoint = r.json()
+    print("o nome do usuário é:", data_posts_endpoint["name"])
 
 def test_octocat_type_is_user():
     r = requests.get("https://api.github.com/users/octocat", headers=headers)
-    data = r.json()
-    assert data["type"] == "User"
-    print("o tipo dele realmente é:", data["type"])
+    data_posts_endpoint = r.json()
+    assert data_posts_endpoint["type"] == "User"
+    print("o tipo dele realmente é:", data_posts_endpoint["type"])
 
 def test_repository_hello_world():
     r = requests.get("https://api.github.com/repositories/1296269", headers=headers)
-    data = r.json()
-    assert data["name"] == "Hello-World"
-    print(f'o nome do repositorio {data["id"]} realmente é {data["name"]}')
+    data_posts_endpoint = r.json()
+    assert data_posts_endpoint["name"] == "Hello-World"
+    print(f'o nome do repositorio {data_posts_endpoint["id"]} realmente é {data_posts_endpoint["name"]}')
 
 def test_nonexistent_user_returns_404():
     r = requests.get("https://api.github.com/users/nonexistentuser12345", headers=headers)
@@ -80,68 +80,68 @@ def test_emojis_endpoint_plus_one_exists():
 
 def test_name_owner_language_in_torvalds():
     r = requests.get("https://api.github.com/repos/torvalds/linux", headers=headers)
-    data = r.json()
-    assert "name" in data
-    assert "owner" in data
-    assert "language" in data
-    print(f'o nome é: {data["name"]}, o dono do repo é: {data["owner"]["login"]} e a linguagem foi: {data["language"]}')
+    data_posts_endpoint = r.json()
+    assert "name" in data_posts_endpoint
+    assert "owner" in data_posts_endpoint
+    assert "language" in data_posts_endpoint
+    print(f'o nome é: {data_posts_endpoint["name"]}, o dono do repo é: {data_posts_endpoint["owner"]["login"]} e a linguagem foi: {data_posts_endpoint["language"]}')
 
 # Compare the "stargazers_count" of Microsoft's "vscode" repository and Atom's "atom" repository. Check if the VSCode count is higher.
 def test_stargazers_and_atom():
     r = requests.get("https://api.github.com/repos/microsoft/vscode", headers=headers)
     r2 = requests.get("https://api.github.com/repos/atom/atom", headers=headers)
-    data = r.json()
-    data2 = r2.json()
+    data_posts_endpoint = r.json()
+    data_delete_endpoint = r2.json()
 
-    if data["stargazers_count"] > data2["stargazers_count"]:
+    if data_posts_endpoint["stargazers_count"] > data_delete_endpoint["stargazers_count"]:
         print("a contagem de stargazers do vscode é maior.")
-    elif data["stargazers_count"] < data2["stargazers_count"]:
+    elif data_posts_endpoint["stargazers_count"] < data_delete_endpoint["stargazers_count"]:
         print("a contagem de stargazers do atom é maior")
-    elif data["stargazers_count"] == data2["stargazers_count"]:
+    elif data_posts_endpoint["stargazers_count"] == data_delete_endpoint["stargazers_count"]:
         print("a contagem dos dois é igual")
-    assert data["stargazers_count"] > data2["stargazers_count"]
+    assert data_posts_endpoint["stargazers_count"] > data_delete_endpoint["stargazers_count"]
 
 def test_mit_license():
     r = requests.get("https://api.github.com/licenses/mit", headers=headers)
-    data = r.json()
+    data_posts_endpoint = r.json()
 
-    assert data["name"] == "MIT License"
-    print(f'o nome da licença é: {data["name"]}')
+    assert data_posts_endpoint["name"] == "MIT License"
+    print(f'o nome da licença é: {data_posts_endpoint["name"]}')
 
 def test_count_common_licenses():
     r = requests.get("https://api.github.com/licenses", headers=headers)
-    data = r.json()
-    total_licenses = len(data)
+    data_posts_endpoint = r.json()
+    total_licenses = len(data_posts_endpoint)
     assert total_licenses == 13
     print(f'existem {total_licenses} no github')
 
 def test_count_apache_search():
     r = requests.get("https://api.github.com/search/repositories?q=licence:apache-2.0", headers=headers)
-    data = r.json()
-    first_repo = data["items"][0]
+    data_posts_endpoint = r.json()
+    first_repo = data_posts_endpoint["items"][0]
     assert first_repo["license"]["key"] == "apache-2.0"
     print(f'o nome do primeiro de repostorio que usa apache 2.0 é: {first_repo["name"]}')
 
 def test_check_docker_repo_moby():
     r = requests.get("https://api.github.com/repos/moby/docker", headers=headers)
-    data = r.json()
-    login = data["owner"]["login"]
-    type = data["owner"]["type"]
+    data_posts_endpoint = r.json()
+    login = data_posts_endpoint["owner"]["login"]
+    type = data_posts_endpoint["owner"]["type"]
     assert login == "moby" and type == "Organization"
     print(f'o repositorio pertence a {login} que é do tipo {type}')
 
 def test_tensorflow():
     r = requests.get("https://api.github.com/repos/tensorflow/tensorflow/commits", headers=headers)
-    data = r.json()
-    message = data[0]["commit"]["message"]
+    data_posts_endpoint = r.json()
+    message = data_posts_endpoint[0]["commit"]["message"]
     assert message != ""
     print(f'a mensagem do último commit não é nula, é: {message}')
 
 def test_apple_org():
     r = requests.get("https://api.github.com/users/apple")
-    data = r.json()
-    login = data["login"]
-    type = data["type"]
+    data_posts_endpoint = r.json()
+    login = data_posts_endpoint["login"]
+    type = data_posts_endpoint["type"]
     assert login == "apple" and type == "Organization"
     print(f'o usuário com login: {login} realmente é do tipo: {type}')
 
@@ -161,12 +161,12 @@ def test_user_torvalds():
     url = "https://api.github.com/users"
     r = "/torvalds"
     search_user = requests.get(url + r)
-    data = search_user.json()
-    user_data = [f'username encontrado: {data["login"]}, nome encontrado: {data["name"]}, número de repositórios públicos encontrado: {data["public_repos"]}']
-    assert data["login"] == "torvalds"
-    assert data["name"] == "Linus Torvalds"
-    assert isinstance(data["public_repos"], int)
-    assert data["public_repos"] > 0
+    data_posts_endpoint = search_user.json()
+    user_data = [f'username encontrado: {data_posts_endpoint["login"]}, nome encontrado: {data_posts_endpoint["name"]}, número de repositórios públicos encontrado: {data_posts_endpoint["public_repos"]}']
+    assert data_posts_endpoint["login"] == "torvalds"
+    assert data_posts_endpoint["name"] == "Linus Torvalds"
+    assert isinstance(data_posts_endpoint["public_repos"], int)
+    assert data_posts_endpoint["public_repos"] > 0
     print(user_data)
 
 def test_create_new_post():
@@ -176,9 +176,9 @@ def test_create_new_post():
     "userId": 0
     }
     r = requests.post("https://jsonplaceholder.typicode.com/posts", json=payload)
-    data = r.json()
+    data_posts_endpoint = r.json()
     assert r.status_code == 201
-    print(data)
+    print(data_posts_endpoint)
 
 def test_validating_post_response():
     payload = {
@@ -187,13 +187,13 @@ def test_validating_post_response():
         "userId": 0
     }
     r = requests.post("https://jsonplaceholder.typicode.com/posts", json=payload)
-    data = r.json()
+    data_posts_endpoint = r.json()
 
     # o que o servidor retornou deve conter o que enviamos
-    assert data["title"] == payload["title"]
-    assert data["body"] == payload["body"]
-    assert data["userId"] == payload["userId"]
-    print("Resposta validada com sucesso:", data)
+    assert data_posts_endpoint["title"] == payload["title"]
+    assert data_posts_endpoint["body"] == payload["body"]
+    assert data_posts_endpoint["userId"] == payload["userId"]
+    print("Resposta validada com sucesso:", data_posts_endpoint)
 
 def test_put_id1():
     payload = {
@@ -203,14 +203,14 @@ def test_put_id1():
         "body": "isso é o conteúdo alterado do post",
     }
     r = requests.put("https://jsonplaceholder.typicode.com/posts/1", json=payload)
-    data = r.json()
+    data_posts_endpoint = r.json()
 
     assert r.status_code == 200
     print(f'Status code inesperado: {r.status_code}')
-    assert data["title"] == payload["title"]
-    assert data["body"] == payload["body"]
-    assert data["id"] == 1
-    print("Post atualizado com sucesso:", data)
+    assert data_posts_endpoint["title"] == payload["title"]
+    assert data_posts_endpoint["body"] == payload["body"]
+    assert data_posts_endpoint["id"] == 1
+    print("Post atualizado com sucesso:", data_posts_endpoint)
 
 def test_validating_put_response():
     payload = {
@@ -220,36 +220,36 @@ def test_validating_put_response():
         "body": "isso é o conteúdo alterado do post",
     }
     r = requests.put("https://jsonplaceholder.typicode.com/posts/1", json=payload)
-    data = r.json()
+    data_posts_endpoint = r.json()
 
-    assert data["userId"] == payload["userId"]
-    assert data["id"] == payload["id"]
-    assert data["title"] == payload["title"]
-    assert data["body"] == payload["body"]
+    assert data_posts_endpoint["userId"] == payload["userId"]
+    assert data_posts_endpoint["id"] == payload["id"]
+    assert data_posts_endpoint["title"] == payload["title"]
+    assert data_posts_endpoint["body"] == payload["body"]
     print("Resposta validada com sucesso: ", payload["body"])
 
 def test_deleting_post1():
     r = requests.delete("https://jsonplaceholder.typicode.com/posts/1")
-    data = r.json()
-    assert data == {} and r.status_code == 200
-    print(f'o post realmente foi apagado: {data} e o status code foi: {r.status_code}')
+    data_posts_endpoint = r.json()
+    assert data_posts_endpoint == {} and r.status_code == 200
+    print(f'o post realmente foi apagado: {data_posts_endpoint} e o status code foi: {r.status_code}')
 
 def test_check_user_list():
     r = requests.get("https://jsonplaceholder.typicode.com/users")
-    data = r.json()
+    data_posts_endpoint = r.json()
     count = 0
 
-    for n in data:
+    for n in data_posts_endpoint:
         count+=1
 
-    assert len(data) == count
+    assert len(data_posts_endpoint) == count
     print(f'a lista tem {count} usuários')
 
 def test_user_id5():
     r = requests.get("https://jsonplaceholder.typicode.com/users/5")
-    data = r.json()
-    assert data["name"] == "Chelsey Dietrich"
-    print(f'o nome do usuário realmente é: {data["name"]}')
+    data_posts_endpoint = r.json()
+    assert data_posts_endpoint["name"] == "Chelsey Dietrich"
+    print(f'o nome do usuário realmente é: {data_posts_endpoint["name"]}')
 
 def test_posts_1_comments():
     payload = {
@@ -259,29 +259,29 @@ def test_posts_1_comments():
         "body": "conteúdo do novo post"
     }
     r = requests.post("https://jsonplaceholder.typicode.com/posts/1/comments", json=payload)
-    data = r.json()
+    data_posts_endpoint = r.json()
     assert r.status_code == 201
-    print(f'o conteúdo do {data}')
+    print(f'o conteúdo do {data_posts_endpoint}')
 
 def test_user_albums():
     r = requests.get("https://jsonplaceholder.typicode.com/users/3/albums")
-    data = r.json()
-    length = len(data)
+    data_posts_endpoint = r.json()
+    length = len(data_posts_endpoint)
     assert length == 10
     print(f'o usuário tem {length} álbuns')
 
 def test_album_id_2_first_photo():
     r = requests.get("https://jsonplaceholder.typicode.com/albums/2/photos")
-    data = r.json()
-    assert len(data) > 0, "a lista está vazia"
+    data_posts_endpoint = r.json()
+    assert len(data_posts_endpoint) > 0, "a lista está vazia"
     print('a lista não está vazia!')
 
-    print(f'o álbum tem {len(data)} fotos. mostrando as 5 primeiras fotos separadas por id e título: ')
-    for i in data[:5]:
+    print(f'o álbum tem {len(data_posts_endpoint)} fotos. mostrando as 5 primeiras fotos separadas por id e título: ')
+    for i in data_posts_endpoint[:5]:
         print(f'id: {i["id"]}, título:{i["title"]}')
 
     expected_title = "reprehenderit est deserunt velit ipsam"
-    first_title = data[0]["title"]
+    first_title = data_posts_endpoint[0]["title"]
     try:
         assert first_title == expected_title, (
             f'o título esperado era: {first_title}'
@@ -296,12 +296,12 @@ def test_create_todo():
 		"completed": False
     }
     r = requests.post("https://jsonplaceholder.typicode.com/users/1/todos", json=payload)
-    data = r.json()
+    data_posts_endpoint = r.json()
     assert r.status_code == 201
     print(f'a nova task foi criada com sucesso. código de status: {r.status_code}')
-    assert str(data["userId"]) == str(payload["userId"])
-    assert str(data["title"]) == str(payload["title"])
-    assert data["completed"] == payload["completed"]
+    assert str(data_posts_endpoint["userId"]) == str(payload["userId"])
+    assert str(data_posts_endpoint["title"]) == str(payload["title"])
+    assert data_posts_endpoint["completed"] == payload["completed"]
     print("o que o servidor retornou está batendo com o que foi passado")
 
 def test_update_task():
@@ -309,20 +309,20 @@ def test_update_task():
 		"completed": True
     }
     r = requests.patch("https://jsonplaceholder.typicode.com/todos/5", json=payload)
-    data = r.json()
+    data_posts_endpoint = r.json()
     assert r.status_code == 200
-    assert data["completed"] == payload["completed"]
-    assert "userId" in data
-    assert "id" in data
-    assert "title" in data
-    print("a task foi atualizada com sucesso!", data)
+    assert data_posts_endpoint["completed"] == payload["completed"]
+    assert "userId" in data_posts_endpoint
+    assert "id" in data_posts_endpoint
+    assert "title" in data_posts_endpoint
+    print("a task foi atualizada com sucesso!", data_posts_endpoint)
 
 def test_list_id1_todos():
     r = requests.get("https://jsonplaceholder.typicode.com/users/1/todos")
-    data = r.json()
+    data_posts_endpoint = r.json()
     completed_tasks = []
 
-    for n in data:
+    for n in data_posts_endpoint:
         if n["completed"]==True:
             completed_tasks.append(n)
             assert n["completed"]==True
@@ -332,40 +332,40 @@ def test_list_id1_todos():
 
 def test_comment_id10():
     r = requests.get("https://jsonplaceholder.typicode.com/comments/10")
-    data = r.json()
-    assert "postId" in data
-    assert "id" in data
-    assert "name" in data
-    assert "email" in data
-    assert "body" in data
+    data_posts_endpoint = r.json()
+    assert "postId" in data_posts_endpoint
+    assert "id" in data_posts_endpoint
+    assert "name" in data_posts_endpoint
+    assert "email" in data_posts_endpoint
+    assert "body" in data_posts_endpoint
     print("tudo certo, comentário checado com sucesso!")
 
 def test_delete_comment_id3():
     r = requests.delete("https://jsonplaceholder.typicode.com/comments/3")
-    data = r.json()
+    data_posts_endpoint = r.json()
     assert r.status_code == 200
-    print(f'comentário deletado! o conteúdo agora é: {data}')
+    print(f'comentário deletado! o conteúdo agora é: {data_posts_endpoint}')
 
 def test_empty_json():
     payload = {}
     r = requests.post("https://jsonplaceholder.typicode.com/todos/", json=payload)
     assert r. status_code == 201
     print("o status code foi: ", r.status_code)
-    data = r.json()
+    data_posts_endpoint = r.json()
     try:
-        assert data["title"] == payload["title"]
+        assert data_posts_endpoint["title"] == payload["title"]
     except KeyError:
         print("realmente não tem nenhum conteúdo no payload")
 
 def test_countid7_posts():
     r = requests.get("https://jsonplaceholder.typicode.com/users/7/posts")
-    data = r.json()
+    data_posts_endpoint = r.json()
     count = 0
 
-    for n in data:
+    for n in data_posts_endpoint:
         count+=1
     
-    assert len(data) == count
+    assert len(data_posts_endpoint) == count
     print(f'o usuário tem {count} comentários')
 
 def test_put_email_id_2():
@@ -373,48 +373,47 @@ def test_put_email_id_2():
         "email": "new.email@example.com"
     }
     r = requests.put("https://jsonplaceholder.typicode.com/users/2", json=payload)
-    data = r.json()
-    assert data["email"] == payload["email"]
+    data_posts_endpoint = r.json()
+    assert data_posts_endpoint["email"] == payload["email"]
     print(f'o email foi trocado para: {payload["email"]}')
 
 def delete_album_id4():
     r = requests.delete("https://jsonplaceholder.typicode.com/albums/4")
-    data = r.json()
+    data_posts_endpoint = r.json()
     assert r. status_code == 200
-    assert data == {}
+    assert data_posts_endpoint == {}
     print("álbum deletado com sucesso!")
 
 def test_whole_json():
     userId = int(input("Digite seu novo ID: "))
-    payload_1 = {
+    payload_posts_endpoint = {
         "userId": userId,
         "title": "titulo do post",
         "body": "body do post"
     }
-
-    r1 = requests.post("https://jsonplaceholder.typicode.com/posts", json=payload_1)
-    data = r1.json()
-    assert r1.status_code == 201
-    post_id = data["id"]
+    request_posts_endpoint = requests.post("https://jsonplaceholder.typicode.com/posts", json=payload_posts_endpoint)
+    data_posts_endpoint = request_posts_endpoint.json()
+    assert request_posts_endpoint.status_code == 201
+    post_id = data_posts_endpoint["id"]
     print("post criado!")
 
-    if data["userId"]==userId:
-        print(data)
+    if data_posts_endpoint["userId"]==userId:
+        print(data_posts_endpoint)
 
-    payload_2 = {
+    payload_comments_endpoint = {
         "postId": post_id,
         "name": "comentário de teste",
         "email": "teste@example.com",
         "body": "conteúdo do comentário"
     }
     
-    r2 = requests.post("https://jsonplaceholder.typicode.com/comments", json=payload_2)
-    assert r2.status_code == 201
+    request_comments_endpoint = requests.post("https://jsonplaceholder.typicode.com/comments", json=payload_comments_endpoint)
+    assert request_comments_endpoint.status_code == 201
     print("Comentário criado com sucesso!")
 
-    r3 = requests.delete(f"https://jsonplaceholder.typicode.com/posts/{post_id}")
-    data2 = r3.json()
-    assert r3.status_code == 200
+    request_delete_comments_endpoint = requests.delete(f"https://jsonplaceholder.typicode.com/posts/{post_id}")
+    data_delete_endpoint = request_delete_comments_endpoint.json()
+    assert request_delete_comments_endpoint.status_code == 200
     print("print deletado!")
-    print(data2)
+    print(data_delete_endpoint)
     

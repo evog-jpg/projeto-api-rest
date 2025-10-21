@@ -1,4 +1,5 @@
 import requests
+import pytest
 
 # Query Params
 # 1. Fetch all comments for post ID 2 and verify that all returned comments belong to that post.
@@ -39,30 +40,134 @@ def test_todos_id1():
 
 # Headers
 # 5. Send a request to httpbin.org/headers with the custom header X-Custom-Header: MyValue and validate the response.
-#def test_custom_header():
-    #r = requests.get("")
+def test_custom_header():
+    headers = {"X-Custom-Header": "MyValue"}
+    r = requests.get("https://httpbin.org/headers", headers=headers)
+
+    if r.status_code == 503:
+        pytest.skip("httpbin.org está indisponível")
+
+    data = r.json()
+
+    assert r.status_code == 200
+    assert data["headers"]["X-Custom-Header"] == "MyValue"
+
+    print(f'o header personalizado foi: {data["headers"]["X-Custom-Header"]}')
 
 # 6. Send a request to httpbin.org/response-headers to set a custom response header (e.g., My-Test-Header: Hello) and check if it is present in the response headers.
-# def test_
+def test_custom_response_header():
+    headers = {"My-Test-Header": "Hello"}
+    r = requests.get("https://httpbin.org/response-headers?My-Test-Header=Hello")
+
+    if r.status_code == 503:
+        pytest.skip("httpbin.org está indisponível")
+
+    data = r.json()
+
+    assert r.status_code == 200
+    assert data["My-Test-Header"] == "Hello"
+    
+    print(f'response headers: {data}')
 
 # 7. Send a request to httpbin.org/headers with a custom User-Agent header ("My-Test-Agent/1.0") and validate if it was received correctly.
-# def test_
+def test_custom_user_agent_header():
+    headers = {"User-Agent": "My-Test-Agent/1.0"}
+    r = requests.get("https://httpbin.org/headers", headers=headers)
+
+    if r.status_code == 503:
+        pytest.skip("httpbin.org está indisponível")
+
+    data = r.json()
+
+    assert r.status_code == 200
+    assert data["headers"]["User-Agent"] == "My-Test-Agent/1.0"
+
+    print(f'o header foi recebido corretamente: {data["headers"]}')
 
 # 8. Send multiple custom headers (X-Header-1: Value1, X-Header-2: Value2) in a single request to httpbin.org/headers and validate all of them.
-# def test_
+def test_multiple_headers():
+    headers = {
+        "X-Header-1": "Value1", 
+        "X-Header-2": "Value2"
+    }
+    r = requests.get("https://httpbin.org/headers", headers=headers)
+
+    if r.status_code == 503:
+        pytest.skip("httpbin.org está indisponível")
+
+    data = r.json()
+
+    assert r.status_code == 200
+    assert data["headers"]["X-Header-1"] == "Value1" and data["headers"]["X-Header-2"] == "Value2"
+
+    print(f'os headers estão presentes em: {data["headers"]}')
 
 # Authentication
 # 9. Test the httpbin Basic Auth endpoint (/basic-auth/user/passwd) with the correct credentials (user, passwd) and validate the 200 status.
-# def test_
+def test_auth_endpoint():
+    username = "user"
+    password = "passwd"
+    r = requests.get("https://httpbin.org/basic-auth/user/passwd", auth=(username, password))
+    
+    if r.status_code == 503:
+        pytest.skip("httpbin.org está indisponível")
+
+    data = r.json()
+
+    print("o status code foi: ", r.status_code)
+
+    assert r.status_code == 200, f"Status inesperado: {r.status_code}"
+    assert data["authenticated"] is True
+    assert data["user"] == username
+
+    print("A autenticação básica foi validada com sucesso!")
 
 # 10. Test the same Basic Auth endpoint with a correct user but wrong password and validate the 401 status.
-# def test_
+def test_wrong_auth_endpoint():
+    username = "user"
+    password = ""
+    r = requests.get("https://httpbin.org/basic-auth/user/passwd", auth=(username, password))
+    if r.status_code == 503:
+        pytest.skip("httpbin.org está indisponível")
+
+    print("o status code foi: ", r.status_code)
+
+    assert r.status_code == 401
+    print("A autenticação básica não pôde ser validada")
 
 # 11. Send a request to httpbin.org/bearer with a valid Bearer Token (mock, e.g., "my-mock-token") and validate the successful authentication.
-# def test_
+def test_bearer_token():
+    token = "my-mock-token"
+
+    headers = {
+        "Authorization": f"Bearer {token}"
+    }
+
+    r = requests.get("https://httpbin.org/bearer", headers=headers)
+    if r.status_code == 503:
+        pytest.skip("httpbin.org está indisponível")
+
+    data = r.json()
+
+    assert r.status_code == 200, f"Status inesperado: {r.status_code}"
+    print("o status code foi: ", r.status_code)
+
+    assert data["authenticated"] is True
+    assert data["token"] == token
+
+    print("Bearer token autenticado com sucesso!")
 
 # 12. Send a request to httpbin.org/bearer without any authorization header and validate if the response is 401.
-# def test_
+def test_missing_parameters():
+    username = ""
+    password = ""
+    r = requests.get("https://httpbin.org/bearer", auth=(username, password))
+    if r.status_code == 503:
+        pytest.skip("httpbin.org está indisponível")
+
+    assert r.status_code == 401
+    print("o status code foi: ", r.status_code)
+    print("não foi passado nenhum dado do usuário")
 
 # Advanced Assertions
 # 13. Fetch user with ID 1 from JSONPlaceholder and validate the data types of the keys id (int), name (str), address (dict), and company (dict).
